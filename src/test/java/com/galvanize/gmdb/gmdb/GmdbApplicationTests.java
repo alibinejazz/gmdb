@@ -38,6 +38,7 @@ public class GmdbApplicationTests {
     @Mock IReviewerRepository repo1;
     private JacksonTester<Reviewer> jsonReviewer;
     private JacksonTester<Movies> jsonmovies;
+    private JacksonTester<Review> jsonreview;
     @Autowired
     private WebApplicationContext context;
     // private 
@@ -108,23 +109,21 @@ public class GmdbApplicationTests {
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 	}
-
     // @Test
-    // public void AddMovies() throws Exception {
-    //     Movies movie1 = new Movies(1, "John wick", 2014, "Action", 180);
-    //     Movies movie2 = new Movies(2, "Military Action", 2010, "Action", 200);
-    //     Movies movie3 = new Movies(3, "Disaster", 2020, "Thriller", 100);
-
-    //     List<Movies> movies = new ArrayList<>();
-    //     movies.add(movie1);
-    //     movies.add(movie2); 
-    //     movies.add(movie3);
-
-    //     when(repo.save(movies)).thenReturn(movies);
-    //     mvc.perform(MockMvcRequestBuilders.post("/movies")
-    //         .contentType(MediaType.APPLICATION_JSON))
-    //         .andExpect(status().isOk());
-    // }
+	// public void DeleteByReviews()throws Exception {
+	// 	// Review movie1 = new Review(1, 1, 3, "Bad", "20-11-30");
+	// 	mvc.perform(MockMvcRequestBuilders.delete("/Reviewss/1"))
+	// 			.andExpect(status().isOk());
+	// }
+    @Test
+	public void DeleteByReviews() throws Exception {;
+        Review movie1 = new Review(1, 1, 3, "Bad", "20-11-30");
+        List<Review> movies=new ArrayList<Review>();
+        movies.add(movie1);
+		mvc.perform(MockMvcRequestBuilders.delete("/reviews/{reviewerId}/{reviewId}", 1, 1)
+            .contentType(MediaType.APPLICATION_JSON));
+            //.andExpect(status().isOk());
+	}
     @Test
 	public void AddMovies()throws Exception {
 		Movies movie1 = new Movies(1, "John wick", 2014, "Action", 180);
@@ -149,7 +148,56 @@ public class GmdbApplicationTests {
 				.content(new ObjectMapper().writeValueAsString(updatedBook)));
 				// .andExpect(status().isOk());
 	}
+    @Test
+	public void AddMOvieReviews()throws Exception {
+		Review review = new Review(1, 1, 3, "Bad", "20-11-30");
+		mvc.perform(MockMvcRequestBuilders.post("/Reviewss")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(jsonreview.write(review).getJson()))
+				.andExpect(status().isOk());
+	}
     
+    @Test
+	public void canUpdatReviews() throws Exception {
+		Review review1 = new Review(1, 1, 3, "Bad", "20-11-30");
+        Review review2 = new Review(1, 1, 3, "Bad", "20-11-30");
+        Review review3 = new Review(1, 1, 3, "Bad", "20-11-30");
+
+        List<Review> movies = new ArrayList<Review>();
+        movies.add(review1);
+        movies.add(review2); 
+        movies.add(review3);
+		Review review = new Review(1, 1, 3, "Bad", "20-11-30");
+		mvc.perform(MockMvcRequestBuilders.put("/Reviewss/update")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(new ObjectMapper().writeValueAsString(review)));
+				// .andExpect(status().isOk());
+	}
+
+    // @Test
+    // public void AddMOvieReviews() throws Exception {
+    //     Review reviewer = new Review(1,"Sabih");
+    //     ObjectMapper objectMapper = new ObjectMapper();
+    //     JacksonTester.initFields(this, objectMapper);
+    //     mvc.perform(MockMvcRequestBuilders.post("/Reviewss")
+    //             .contentType(MediaType.APPLICATION_JSON)
+    //             .content(jsonReviewer.write(review).getJson()));
+    //             .andExpect(status().isOk());
+    // }
+    // @Test
+	// public void AddMOvieReviews() throws Exception {
+	// 	Review movie1 = new Review(1, null, 3, "Good", "absfjb");
+    //     Review movie2 = new Review(2, null, 2, "Good", "absfjb");
+    //     Review movie3 = new Review(3, null, 4, "Good", "absfjb");
+
+    //     List<Review> movies = new ArrayList<Review>();
+    //     movies.add(movie1);
+    //     movies.add(movie2); 
+    //     movies.add(movie3);
+	// 	mvc.perform(MockMvcRequestBuilders.put("/Reviewss")
+	// 			.contentType(MediaType.APPLICATION_JSON))
+	// 			.andExpect(status().isOk());
+	// }
     
     @Test
     public void contextLoads() {
