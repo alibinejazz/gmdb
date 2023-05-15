@@ -3,11 +3,13 @@ package com.galvanize.gmdb.gmdb;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -29,15 +31,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 @SpringBootTest
 public class GmdbApplicationTests {
-    private MockMvc mvc;
+    private MockMvc mvc,mvc1;
+    @InjectMocks
+    private MoviesController moviesController;
     @Mock IMoviesRepository repo;
     @Mock IReviewerRepository repo1;
     private JacksonTester<Reviewer> jsonReviewer;
+    private JacksonTester<Movies> jsonmovies;
     @Autowired
     private WebApplicationContext context;
+    // private 
     @BeforeEach
     public void setup() {
+        JacksonTester.initFields(this, new ObjectMapper());
         mvc = MockMvcBuilders.webAppContextSetup(context).build();
+        mvc1=MockMvcBuilders.standaloneSetup(moviesController).build();
     }
     @Test
     public void getAllMovies() throws Exception {
@@ -77,7 +85,7 @@ public class GmdbApplicationTests {
         reviewers.add(reviewer3);
         
         when(repo1.findAll()).thenReturn(reviewers);
-        mvc.perform(get("/reviewers/reviews")
+        mvc1.perform(get("/reviewers/reviews")
             .contentType(MediaType.APPLICATION_JSON))
            .andExpect(status().isOk());
     }
@@ -91,6 +99,56 @@ public class GmdbApplicationTests {
                 .content(jsonReviewer.write(reviewer).getJson()));
                 // .andExpect(status().isOk());
     }   
+    @Test
+	public void canDeleteMovies() throws Exception {
+		Movies movie1 = new Movies(1, "Babies",1999 , "Kids Movies", 60);
+        List<Movies> movies=new ArrayList<Movies>();
+        movies.add(movie1);
+		mvc.perform(MockMvcRequestBuilders.delete("/movies/1")
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+	}
+
+    // @Test
+    // public void AddMovies() throws Exception {
+    //     Movies movie1 = new Movies(1, "John wick", 2014, "Action", 180);
+    //     Movies movie2 = new Movies(2, "Military Action", 2010, "Action", 200);
+    //     Movies movie3 = new Movies(3, "Disaster", 2020, "Thriller", 100);
+
+    //     List<Movies> movies = new ArrayList<>();
+    //     movies.add(movie1);
+    //     movies.add(movie2); 
+    //     movies.add(movie3);
+
+    //     when(repo.save(movies)).thenReturn(movies);
+    //     mvc.perform(MockMvcRequestBuilders.post("/movies")
+    //         .contentType(MediaType.APPLICATION_JSON))
+    //         .andExpect(status().isOk());
+    // }
+    @Test
+	public void AddMovies()throws Exception {
+		Movies movie1 = new Movies(1, "John wick", 2014, "Action", 180);
+		mvc.perform(MockMvcRequestBuilders.post("/movies")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(jsonmovies.write(movie1).getJson()))
+				.andExpect(status().isOk());
+	}
+    @Test
+	public void canUpdatMovies() throws Exception {
+		Movies movie1 = new Movies(1, "John wick", 2014, "Action", 180);
+        Movies movie2 = new Movies(2, "Military Action", 2010, "Action", 200);
+        Movies movie3 = new Movies(3, "Disaster", 2020, "Thriller", 100);
+
+        List<Movies> movies = new ArrayList<Movies>();
+        movies.add(movie1);
+        movies.add(movie2); 
+        movies.add(movie3);
+		Movies updatedBook = new Movies(3, "Disaster", 2020, "Thriller", 100);
+		mvc.perform(MockMvcRequestBuilders.put("/movies/update")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(new ObjectMapper().writeValueAsString(updatedBook)));
+				// .andExpect(status().isOk());
+	}
     
     
     @Test

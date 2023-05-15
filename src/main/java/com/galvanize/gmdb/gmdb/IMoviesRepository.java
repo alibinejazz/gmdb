@@ -8,5 +8,7 @@ public interface IMoviesRepository extends JpaRepository<Movies,Long>{
 
     Object findById(int i);
 
+    // void update(Movies movies);
+
     
 }
