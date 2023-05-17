@@ -26,16 +26,16 @@ public class MoviesController {
     public List<Movies> getAllMovies(){
         return this.repo.findAll();
     }
-    @GetMapping("{id}")
-    public Movies getMOvie(@PathVariable Long id){
+    @GetMapping("/{id}")
+    public Movies getMovie(@PathVariable Long id) {
         return this.repo.findById(id).orElse(null);
     }
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         this.repo.deleteById(id);
     }
-    // @PutMapping("/update")
-    // public void update(@RequestBody Movies movies) {
-    //     this.repo.update(movies);
-    // }
+    @PutMapping("/update")
+    public void update(@RequestBody Movies movies) {
+        this.repo.save(movies);
+    }
 }

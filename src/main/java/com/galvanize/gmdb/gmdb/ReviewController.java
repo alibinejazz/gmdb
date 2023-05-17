@@ -9,14 +9,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/Reviewss")
+@RequestMapping("/reviews")
 public class ReviewController {
     @Autowired
     private IReviewsRepository repo;
     @PostMapping("")  
-    public void createMovies(@RequestBody Review review) {
-        this.repo.save(review);
+    public void createReview(@RequestBody Review review) {
+         this.repo.save(review);
     }
+    
     @DeleteMapping("{id}")
     public void delete(@PathVariable Long id) {
         this.repo.deleteById(id);
